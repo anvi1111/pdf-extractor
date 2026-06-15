@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Extracted PDF
+    </title>
+
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .toolbar {
+            margin-bottom: 20px;
+        }
+
+        .toolbar a,
+        .toolbar button {
+            padding: 10px 15px;
+            margin-right: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        #content {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fafafa;
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+        }
+
+        th,
+        td {
+            padding: 8px;
+        }
+
+        img {
+            max-width: 100%;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h1>
+        Extracted PDF
+    </h1>
+
+    <div class="toolbar">
+
+        <a href="/download/md">
+            Download MD
+        </a>
+
+        <button onclick="copyText()">
+            Copy Text
+        </button>
+
+    </div>
+
+    <div id="content">
+
+        {{ html_content|safe }}
+
+    </div>
+
+    <script>
+
+        function copyText() {
+
+            navigator.clipboard.writeText(
+                document.getElementById(
+                    "content"
+                ).innerText
+            );
+
+            alert(
+                "Copied!"
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>
