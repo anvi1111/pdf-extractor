@@ -70,9 +70,23 @@ def upload():
         ]
     )
 
+    # Updated to include pdf_file parameter
     return render_template(
         "result.html",
-        html_content=html_content
+        html_content=html_content,
+        pdf_file=pdf.filename
+    )
+
+
+# New route to serve uploaded PDFs
+@app.route("/pdf/<filename>")
+def serve_pdf(filename):
+
+    return send_file(
+        os.path.join(
+            UPLOAD_FOLDER,
+            filename
+        )
     )
 
 

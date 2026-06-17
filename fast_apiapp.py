@@ -1,4 +1,11 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+
+from fastapi import (
+    FastAPI,
+    UploadFile,
+    File,
+    HTTPException
+)
+
 import shutil
 import os
 
@@ -6,6 +13,7 @@ from extractor import extract_pdf
 
 app = FastAPI(
     title="PDF Extractor API",
+    description="PDF to Markdown extraction using Marker PDF and Surya OCR",
     version="1.0.0"
 )
 
@@ -15,6 +23,16 @@ os.makedirs(
     UPLOAD_FOLDER,
     exist_ok=True
 )
+
+
+@app.get("/")
+def root():
+
+    return {
+        "message": "PDF Extractor API is running",
+        "docs": "/docs",
+        "health": "/health"
+    }
 
 
 @app.get("/health")
@@ -30,11 +48,18 @@ async def extract(
     pdf: UploadFile = File(...)
 ):
 
-    if not pdf.filename.endswith(".pdf"):
+    if not pdf.filename:
 
         raise HTTPException(
             status_code=400,
-            detail="Only PDF files allowed"
+            detail="No file uploaded"
+        )
+
+    if not pdf.filename.lower().endswith(".pdf"):
+
+        raise HTTPException(
+            status_code=400,
+            detail="Only PDF files are allowed"
         )
 
     filepath = os.path.join(
@@ -42,20 +67,32 @@ async def extract(
         pdf.filename
     )
 
-    with open(filepath, "wb") as buffer:
+    try:
 
-        shutil.copyfileobj(
-            pdf.file,
-            buffer
+        with open(
+            filepath,
+            "wb"
+        ) as buffer:
+
+            shutil.copyfileobj(
+                pdf.file,
+                buffer
+            )
+
+        result = extract_pdf(
+            filepath
         )
 
-    result = extract_pdf(
-        filepath
-    )
+        return {
+            "success": True,
+            "filename": result["filename"],
+            "markdown": result["markdown"],
+            "download_file": result["md_file"]
+        }
 
-    return {
-        "success": True,
-        "filename": result["filename"],
-        "markdown": result["markdown"],
-        "download_file": result["md_file"]
-    }
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
